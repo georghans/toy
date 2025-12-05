@@ -1,0 +1,18 @@
+# Build & VCS artifacts
+.git
+.gitignore
+build
+out
+bin
+
+# IDE
+.idea
+.vscode
+*.iml
+
+# OS / misc
+*.log
+*.swp
+*.DS_Store
+node_modules
+.gradle

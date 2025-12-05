@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expense-app
+  labels:
+    app: expense-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expense-app
+  template:
+    metadata:
+      labels:
+        app: expense-app
+    spec:
+      containers:
+        - name: expense-app
+          image: ghcr.io/your-org/expense-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expense-app
+  labels:
+    app: expense-app
+spec:
+  selector:
+    app: expense-app
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  type: ClusterIP

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Pulse</title>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0c11;
+            --panel: #11131c;
+            --panel-2: #161927;
+            --accent: #6cf3c5;
+            --accent-2: #5f8bff;
+            --text: #f5f7fb;
+            --muted: #8d93a5;
+            --stroke: #1f2332;
+            --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at 20% 20%, rgba(92, 133, 255, 0.08), transparent 35%),
+                        radial-gradient(circle at 80% 0%, rgba(108, 243, 197, 0.08), transparent 35%),
+                        var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        main {
+            max-width: 1100px;
+            margin: 32px auto 80px;
+            padding: 0 18px;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        .title {
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            font-size: 26px;
+        }
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(108, 243, 197, 0.18), rgba(95, 139, 255, 0.18));
+            color: var(--text);
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .card {
+            background: linear-gradient(145deg, var(--panel), var(--panel-2));
+            border: 1px solid var(--stroke);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: var(--shadow);
+        }
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .muted { color: var(--muted); margin: 0; }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .category-btn {
+            border: 1px solid var(--stroke);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: left;
+            cursor: pointer;
+            transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .category-btn:hover {
+            transform: translateY(-1px);
+            border-color: rgba(108, 243, 197, 0.35);
+            background: rgba(108, 243, 197, 0.06);
+        }
+        .icon {
+            font-size: 20px;
+        }
+        .entry {
+            min-height: 220px;
+        }
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--stroke);
+            border-radius: 12px;
+            padding: 10px 12px;
+            cursor: pointer;
+            color: var(--text);
+            font-weight: 600;
+            transition: all 0.12s ease;
+        }
+        .chip:hover {
+            border-color: rgba(108, 243, 197, 0.35);
+            background: rgba(108, 243, 197, 0.08);
+        }
+        form {
+            margin-top: 14px;
+            display: grid;
+            gap: 10px;
+        }
+        label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            font-weight: 700;
+        }
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+        .currency-input {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--stroke);
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .currency-input input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-size: 16px;
+            width: 100%;
+        }
+        .primary {
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            color: #0b0c11;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            padding: 13px 14px;
+            cursor: pointer;
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+            box-shadow: 0 12px 30px rgba(95, 139, 255, 0.25);
+        }
+        .primary:hover { transform: translateY(-1px); }
+        .message {
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(108, 243, 197, 0.4);
+            background: rgba(108, 243, 197, 0.08);
+            color: var(--text);
+            font-weight: 600;
+        }
+        .summary-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .summary-total h1 {
+            margin: 0;
+            font-size: 30px;
+            letter-spacing: -0.02em;
+        }
+        .bar-row {
+            display: grid;
+            grid-template-columns: 1.2fr 2fr auto;
+            gap: 10px;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--stroke);
+        }
+        .bar-row:last-child { border-bottom: none; }
+        .bar {
+            width: 100%;
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.04);
+            overflow: hidden;
+            border: 1px solid var(--stroke);
+        }
+        .fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            width: 0;
+            transition: width 0.2s ease;
+        }
+        .value {
+            font-weight: 700;
+        }
+        .loading {
+            color: var(--muted);
+        }
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: 1fr; }
+            header { flex-direction: column; align-items: flex-start; gap: 6px; }
+        }
+    </style>
+</head>
+<body>
+<main>
+    <header>
+        <div>
+            <div class="pill">Budget Pulse</div>
+            <div class="title">Tap a category, log an amount. That’s it.</div>
+        </div>
+    </header>
+
+    <div class="grid">
+        <section class="card">
+            <h2>Categories</h2>
+            <p class="muted">Keep it light: one tap, then an amount.</p>
+            <div class="category-grid">
+                <button
+                        th:each="cat : ${categories}"
+                        class="category-btn"
+                        th:attr="hx-get=@{'/category/' + ${cat.id} + '/form'}, hx-target='#entry-panel', hx-swap='innerHTML'"
+                        type="button">
+                    <span class="icon" th:text="${cat.icon}">🍜</span>
+                    <div>
+                        <div th:text="${cat.name}">Category</div>
+                        <div class="muted" style="font-size:12px;">Log spend</div>
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <section class="card entry" id="entry-panel">
+            <h2>Quick add</h2>
+            <p class="muted">Pick a category to enter an amount.</p>
+        </section>
+    </div>
+
+    <section class="card" id="summary"
+             hx-get="/summary"
+             hx-trigger="load, expenseAdded from:body"
+             hx-swap="outerHTML"
+             th:fragment="summary">
+        <div class="summary-header">
+            <div>
+                <p class="muted" style="text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;">This month</p>
+                <h2 th:text="${monthLabel}">January 2025</h2>
+            </div>
+            <div class="summary-total">
+                <p class="muted">Total spent</p>
+                <h1 th:text="${'$' + #numbers.formatDecimal(totalSpent, 1, 2)}">$0.00</h1>
+            </div>
+        </div>
+        <div>
+            <div th:if="${#lists.isEmpty(summary)}" class="loading">Nothing logged yet. First entry will show up here instantly.</div>
+            <div th:each="item : ${summary}"
+                 th:with="percent=${totalSpent.compareTo(T(java.math.BigDecimal).ZERO) > 0 ? item.total.multiply(T(java.math.BigDecimal).valueOf(100)).divide(totalSpent, 0, T(java.math.RoundingMode).HALF_UP) : 0}"
+                 class="bar-row">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span class="icon" th:text="${item.category.icon}">🥗</span>
+                    <div>
+                        <div th:text="${item.category.name}">Category</div>
+                        <div class="muted" th:text="${percent + '%'}">0%</div>
+                    </div>
+                </div>
+                <div class="bar">
+                    <div class="fill" th:style="${'width:' + percent + '%;'}"></div>
+                </div>
+                <div class="value" th:text="${'$' + #numbers.formatDecimal(item.total, 1, 2)}">$0.00</div>
+            </div>
+        </div>
+    </section>
+
+    <div th:fragment="entryForm">
+        <h2 th:text="${category.name}">Category</h2>
+        <p class="muted">Tap a shortcut or enter a custom number.</p>
+        <div class="chip-row">
+            <button class="chip" type="button"
+                    th:each="amt : ${amountOptions}"
+                    th:text="${'+' + amt}"
+                    th:attr='hx-post="/expense", hx-target="#entry-panel", hx-swap="innerHTML", hx-vals="{\"categoryId\": [[${category.id}]], \"amount\": [[${amt}]]}"'>
+                +5
+            </button>
+        </div>
+        <form hx-post="/expense" hx-target="#entry-panel" hx-swap="innerHTML">
+            <input type="hidden" name="categoryId" th:value="${category.id}">
+            <div>
+                <label>Custom amount</label>
+                <div class="currency-input">
+                    <span>$</span>
+                    <input name="amount" type="number" inputmode="decimal" step="0.01" min="0.1" placeholder="0.00" required>
+                </div>
+            </div>
+            <button class="primary" type="submit"
+                    th:text="${'Add to ' + category.name}">Add</button>
+        </form>
+        <div th:if="${message}" class="message" th:text="${message}">Added!</div>
+    </div>
+</main>
+</body>
+</html>
