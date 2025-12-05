@@ -8,8 +8,8 @@ on:
 env:
   REGISTRY_HOST: ghcr.io
   IMAGE_NAME: expense-app
-  IMAGE_TAG: latest
-  IMAGE: ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+  IMAGE_TAG: expense-app
+  IMAGE: ghcr.io/${{ github.actor }}/expense-app:expense-app
 
 jobs:
   build:
