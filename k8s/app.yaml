@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: expense-app
-          image: ghcr.io/your-org/expense-app:latest
+          image: ghcr.io/georghans/expense-app:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
